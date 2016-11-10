@@ -1,5 +1,8 @@
 ###微信小程序加密数据解密算法GO版
 
+**微信小程序官方说明文档签名加密篇链接**
+> http://mp.weixin.qq.com/debug/wxadoc/dev/api/signature.html?t=20161107
+
 **使用方法**
 
 > go get github.com/xlstudio/wxbizdatacrypt

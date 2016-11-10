@@ -1,12 +1,12 @@
 package wxbizdatacrypt
 
 import (
-	"errors"
-	"fmt"
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"strings"
 )
 
@@ -65,7 +65,7 @@ func (wxCrypt *WxBizDataCrypt) Decrypt(encryptedData string, iv string, isJSON b
 
 	mode := cipher.NewCBCDecrypter(aesBlock, aesIV)
 	mode.CryptBlocks(aesPlantText, aesCipherText)
-	aesPlantText = PKCS7UnPadding(aesPlantText, aesBlock.BlockSize())
+	aesPlantText = PKCS7UnPadding(aesPlantText)
 
 	var decrypted map[string]interface{}
 	aesPlantText = []byte(strings.Replace(string(aesPlantText), "\a", "", -1))
@@ -85,12 +85,12 @@ func (wxCrypt *WxBizDataCrypt) Decrypt(encryptedData string, iv string, isJSON b
 	return decrypted, nil
 }
 
-// PKCS7UnPadding return UnPadding []Byte plantText
-func PKCS7UnPadding(plantText []byte, blockSize int) []byte {
+// PKCS7UnPadding return unpadding []Byte plantText
+func PKCS7UnPadding(plantText []byte) []byte {
 	length := len(plantText)
-	residue := length % blockSize
-	if residue != 0 {
-		return plantText[:(length - residue)]
+	unPadding := int(plantText[length-1])
+	if unPadding < 1 || unPadding > 32 {
+		unPadding = 0
 	}
-	return plantText
+	return plantText[:(length - unPadding)]
 }

@@ -11,10 +11,10 @@ import (
 )
 
 var errorCode = map[string]int{
-	"IllegalAesKey" : -41001,
-	"IllegalIv" :  -41002,
-	"IllegalBuffer" :  -41003,
-	"DecodeBase64Error" :  -41004,
+	"IllegalAesKey":     -41001,
+	"IllegalIv":         -41002,
+	"IllegalBuffer":     -41003,
+	"DecodeBase64Error": -41004,
 }
 
 // WxBizDataCrypt represents an active WxBizDataCrypt object
@@ -25,7 +25,7 @@ type WxBizDataCrypt struct {
 
 type showError struct {
 	errorCode int
-	errorMsg error
+	errorMsg  error
 }
 
 func (e showError) Error() string {

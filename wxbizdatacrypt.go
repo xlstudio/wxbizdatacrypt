@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strings"
+	// "regexp"
 )
 
 var errorCode = map[string]int{
@@ -68,8 +68,11 @@ func (wxCrypt *WxBizDataCrypt) Decrypt(encryptedData string, iv string, isJSON b
 	aesPlantText = PKCS7UnPadding(aesPlantText)
 
 	var decrypted map[string]interface{}
-	aesPlantText = []byte(strings.Replace(string(aesPlantText), "\a", "", -1))
-	err = json.Unmarshal([]byte(aesPlantText), &decrypted)
+
+	// re := regexp.MustCompile(`[^\{]*(\{.*\})[^\}]*`)
+	// aesPlantText = []byte(re.ReplaceAllString(string(aesPlantText), "$1"))
+
+	err = json.Unmarshal(aesPlantText, &decrypted)
 	if err != nil {
 		return nil, showError{errorCode["IllegalBuffer"], err}
 	}
@@ -89,8 +92,8 @@ func (wxCrypt *WxBizDataCrypt) Decrypt(encryptedData string, iv string, isJSON b
 func PKCS7UnPadding(plantText []byte) []byte {
 	length := len(plantText)
 	unPadding := int(plantText[length-1])
-	if unPadding < 1 || unPadding > 32 {
-		unPadding = 0
-	}
+	// if unPadding < 1 || unPadding > 32 {
+	// 	unPadding = 0
+	// }
 	return plantText[:(length - unPadding)]
 }

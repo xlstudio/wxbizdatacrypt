@@ -11,10 +11,12 @@ import (
 )
 
 var errorCode = map[string]int{
+	"IllegalAppID":      -41000,
 	"IllegalAesKey":     -41001,
-	"IllegalIv":         -41002,
+	"IllegalIV":         -41002,
 	"IllegalBuffer":     -41003,
 	"DecodeBase64Error": -41004,
+	"DecodeJsonError":   -41005,
 }
 
 // WxBizDataCrypt represents an active WxBizDataCrypt object
@@ -45,7 +47,7 @@ func (wxCrypt *WxBizDataCrypt) Decrypt(encryptedData string, iv string, isJSON b
 	}
 
 	if len(iv) != 24 {
-		return nil, showError{errorCode["IllegalIv"], errors.New("iv length is error")}
+		return nil, showError{errorCode["IllegalIV"], errors.New("iv length is error")}
 	}
 	aesIV, err := base64.StdEncoding.DecodeString(iv)
 	if err != nil {
@@ -74,11 +76,11 @@ func (wxCrypt *WxBizDataCrypt) Decrypt(encryptedData string, iv string, isJSON b
 
 	err = json.Unmarshal(aesPlantText, &decrypted)
 	if err != nil {
-		return nil, showError{errorCode["IllegalBuffer"], err}
+		return nil, showError{errorCode["DecodeJsonError"], err}
 	}
 
 	if decrypted["watermark"].(map[string]interface{})["appid"] != wxCrypt.AppID {
-		return nil, showError{errorCode["IllegalBuffer"], errors.New("appId is not match")}
+		return nil, showError{errorCode["IllegalAppID"], errors.New("appID is not match")}
 	}
 
 	if isJSON == true {

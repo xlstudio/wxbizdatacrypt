@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	// "regexp"
+	"regexp"
 )
 
 var errorCode = map[string]int{
@@ -69,8 +69,8 @@ func (wxCrypt *WxBizDataCrypt) Decrypt(encryptedData string, iv string, isJSON b
 
 	var decrypted map[string]interface{}
 
-	// re := regexp.MustCompile(`[^\{]*(\{.*\})[^\}]*`)
-	// aesPlantText = []byte(re.ReplaceAllString(string(aesPlantText), "$1"))
+	re := regexp.MustCompile(`[^\{]*(\{.*\})[^\}]*`)
+	aesPlantText = []byte(re.ReplaceAllString(string(aesPlantText), "$1"))
 
 	err = json.Unmarshal(aesPlantText, &decrypted)
 	if err != nil {
@@ -92,8 +92,5 @@ func (wxCrypt *WxBizDataCrypt) Decrypt(encryptedData string, iv string, isJSON b
 func PKCS7UnPadding(plantText []byte) []byte {
 	length := len(plantText)
 	unPadding := int(plantText[length-1])
-	// if unPadding < 1 || unPadding > 32 {
-	// 	unPadding = 0
-	// }
 	return plantText[:(length - unPadding)]
 }

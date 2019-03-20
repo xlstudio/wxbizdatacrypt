@@ -93,6 +93,9 @@ func (wxCrypt *WxBizDataCrypt) Decrypt(encryptedData string, iv string, isJSON b
 // PKCS7UnPadding return unpadding []Byte plantText
 func PKCS7UnPadding(plantText []byte) []byte {
 	length := len(plantText)
-	unPadding := int(plantText[length-1])
-	return plantText[:(length - unPadding)]
+	if length > 0 {
+		unPadding := int(plantText[length-1])
+		return plantText[:(length - unPadding)]
+	}
+	return plantText;
 }

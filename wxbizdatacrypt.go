@@ -12,17 +12,17 @@ import (
 )
 
 var errorCode = map[string]int{
-	"IllegalAppID":      -41000,
-	"IllegalAesKey":     -41001,
-	"IllegalIV":         -41002,
-	"IllegalBuffer":     -41003,
-	"DecodeBase64Error": -41004,
-	"DecodeJsonError":   -41005,
+	"illegalAppId":      -41000,
+	"illegalAesKey":     -41001,
+	"illegalIv":         -41002,
+	"illegalBuffer":     -41003,
+	"decodeBase64Error": -41004,
+	"decodeJsonError":   -41005,
 }
 
 // WxBizDataCrypt represents an active WxBizDataCrypt object
 type WxBizDataCrypt struct {
-	AppID      string
+	AppId      string
 	SessionKey string
 }
 
@@ -39,34 +39,35 @@ func (e showError) Error() string {
 // If isJSON is true, Decrypt return JSON type.
 // If isJSON is false, Decrypt return map type.
 func (wxCrypt *WxBizDataCrypt) Decrypt(encryptedData string, iv string, isJSON bool) (interface{}, error) {
-	if len(wxCrypt.SessionKey) != 24 {
-		return nil, showError{errorCode["IllegalAesKey"], errors.New("sessionKey length is error")}
+	sessionKey := strings.Replace(strings.TrimSpace(wxCrypt.SessionKey), " ", "+", -1)
+	if len(sessionKey) != 24 {
+		return nil, showError{errorCode["illegalAesKey"], errors.New("sessionKey length is error")}
 	}
-	aesKey, err := base64.StdEncoding.DecodeString(wxCrypt.SessionKey)
+	aesKey, err := base64.StdEncoding.DecodeString(sessionKey)
 	if err != nil {
-		return nil, showError{errorCode["DecodeBase64Error"], err}
+		return nil, showError{errorCode["decodeBase64Error"], err}
 	}
-
+	iv = strings.Replace(strings.TrimSpace(iv), " ", "+", -1)
 	if len(iv) != 24 {
-		return nil, showError{errorCode["IllegalIV"], errors.New("iv length is error")}
+		return nil, showError{errorCode["illegalIv"], errors.New("iv length is error")}
 	}
-	aesIV, err := base64.StdEncoding.DecodeString(iv)
+	aesIv, err := base64.StdEncoding.DecodeString(iv)
 	if err != nil {
-		return nil, showError{errorCode["DecodeBase64Error"], err}
+		return nil, showError{errorCode["decodeBase64Error"], err}
 	}
 	encryptedData = strings.Replace(strings.TrimSpace(encryptedData), " ", "+", -1)
 	aesCipherText, err := base64.StdEncoding.DecodeString(encryptedData)
 	if err != nil {
-		return nil, showError{errorCode["DecodeBase64Error"], err}
+		return nil, showError{errorCode["decodeBase64Error"], err}
 	}
 	aesPlantText := make([]byte, len(aesCipherText))
 
 	aesBlock, err := aes.NewCipher(aesKey)
 	if err != nil {
-		return nil, showError{errorCode["IllegalBuffer"], err}
+		return nil, showError{errorCode["illegalBuffer"], err}
 	}
 
-	mode := cipher.NewCBCDecrypter(aesBlock, aesIV)
+	mode := cipher.NewCBCDecrypter(aesBlock, aesIv)
 	mode.CryptBlocks(aesPlantText, aesCipherText)
 	aesPlantText = PKCS7UnPadding(aesPlantText)
 
@@ -76,14 +77,14 @@ func (wxCrypt *WxBizDataCrypt) Decrypt(encryptedData string, iv string, isJSON b
 	aesPlantText = []byte(re.ReplaceAllString(string(aesPlantText), "$1"))
 	err = json.Unmarshal(aesPlantText, &decrypted)
 	if err != nil {
-		return nil, showError{errorCode["DecodeJsonError"], err}
+		return nil, showError{errorCode["decodeJsonError"], err}
 	}
 
-	if decrypted["watermark"].(map[string]interface{})["appid"] != wxCrypt.AppID {
-		return nil, showError{errorCode["IllegalAppID"], errors.New("appID is not match")}
+	if decrypted["watermark"].(map[string]interface{})["appid"] != wxCrypt.AppId {
+		return nil, showError{errorCode["illegalAppId"], errors.New("appId is not match")}
 	}
 
-	if isJSON == true {
+	if isJSON {
 		return string(aesPlantText), nil
 	}
 
@@ -97,5 +98,5 @@ func PKCS7UnPadding(plantText []byte) []byte {
 		unPadding := int(plantText[length-1])
 		return plantText[:(length - unPadding)]
 	}
-	return plantText;
+	return plantText
 }

@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 var errorCode = map[string]int{
@@ -53,7 +54,7 @@ func (wxCrypt *WxBizDataCrypt) Decrypt(encryptedData string, iv string, isJSON b
 	if err != nil {
 		return nil, showError{errorCode["DecodeBase64Error"], err}
 	}
-
+	encryptedData = strings.Replace(strings.TrimSpace(encryptedData), " ", "+", -1)
 	aesCipherText, err := base64.StdEncoding.DecodeString(encryptedData)
 	if err != nil {
 		return nil, showError{errorCode["DecodeBase64Error"], err}
@@ -73,7 +74,6 @@ func (wxCrypt *WxBizDataCrypt) Decrypt(encryptedData string, iv string, isJSON b
 
 	re := regexp.MustCompile(`[^\{]*(\{.*\})[^\}]*`)
 	aesPlantText = []byte(re.ReplaceAllString(string(aesPlantText), "$1"))
-
 	err = json.Unmarshal(aesPlantText, &decrypted)
 	if err != nil {
 		return nil, showError{errorCode["DecodeJsonError"], err}

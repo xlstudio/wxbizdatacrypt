@@ -2,13 +2,13 @@
 
 **微信小程序开发官方说明文档 - 签名加密篇文档链接**
 
-***1. 最早的文档链接（已跳转，可能随时会失效）***
-> http://mp.weixin.qq.com/debug/wxadoc/dev/api/signature.html?t=20161107
+***~~1. 最早的文档链接（已失效）~~***
+> ~~http://mp.weixin.qq.com/debug/wxadoc/dev/api/signature.html?t=20161107~~
 
-***2. 旧文档链接（已暂停更新，可能随时会失效）***
-> https://developers.weixin.qq.com/miniprogram/dev/api/signature.html
+***~~2. 旧文档链接（已失效）~~***
+> ~~https://developers.weixin.qq.com/miniprogram/dev/api/signature.html~~
 
-***3. 新文档链接（当前官方最新文档）***
+***3. 最新文档链接（当前官方最新文档）***
 > https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/signature.html
 
 **使用方法**
